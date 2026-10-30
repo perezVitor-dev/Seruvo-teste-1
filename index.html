@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relógio e Conversor: Angola & Brasil</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --angola-accent: #dc2626;
+            --brazil-accent: #16a34a;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Seção de Relógios */
+        .clocks-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 600px) {
+            .clocks-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .clock-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .clock-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+
+        .clock-card.angola::before { background-color: var(--angola-accent); }
+        .clock-card.brazil::before { background-color: var(--brazil-accent); }
+
+        .country-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .time-display {
+            font-size: 3rem;
+            font-weight: bold;
+            font-variant-numeric: tabular-nums;
+            margin: 0.5rem 0;
+        }
+
+        .clock-card.angola .time-display { color: #facc15; }
+        .clock-card.brazil .time-display { color: #4ade80; }
+
+        .date-display {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Seção do Conversor de Reuniões */
+        .converter-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .converter-card h2 {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--text-main);
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 600px) {
+            .input-group {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        select, input {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        select:focus, input:focus {
+            border-color: #60a5fa;
+        }
+
+        .results-box {
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            padding: 1.25rem;
+            border: 1px solid var(--border-color);
+            margin-top: 1rem;
+        }
+
+        .results-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .result-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .result-line:last-child {
+            border-bottom: none;
+        }
+
+        .result-country {
+            font-weight: 500;
+        }
+
+        .result-time {
+            font-weight: bold;
+            color: #60a5fa;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Painel de Fusos Horários</h1>
+        <p>Angola & Brasil em Tempo Real e Agendador de Reuniões</p>
+    </header>
+
+    <div class="container">
+        <!-- Relógios em Tempo Real -->
+        <div class="clocks-grid">
+            <div class="clock-card angola">
+                <div class="country-name">🇦🇴 Angola (Luanda)</div>
+                <div class="time-display" id="ao-clock">00:00:00</div>
+                <div class="date-display" id="ao-date">Carregando data...</div>
+            </div>
+            <div class="clock-card brazil">
+                <div class="country-name">🇧🇷 Brasil (Brasília)</div>
+                <div class="time-display" id="br-clock">00:00:00</div>
+                <div class="date-display" id="br-date">Carregando data...</div>
+            </div>
+        </div>
+
+        <!-- Planejador de Reuniões / Conversor -->
+        <div class="converter-card">
+            <h2>Simulador de Horário para Reuniões</h2>
+            <div class="input-group">
+                <div class="field">
+                    <label for="origin-country">País de Origem do Horário</label>
+                    <select id="origin-country">
+                        <option value="AO">Angola (Luanda)</option>
+                        <option value="BR">Brasil (Horário de Brasília)</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="meeting-time">Horário Pretendido</label>
+                    <input type="time" id="meeting-time" value="15:30">
+                </div>
+            </div>
+
+            <div class="results-box">
+                <div class="results-title">Correspondência de Fusos</div>
+                <div class="result-line">
+                    <span class="result-country">🇦🇴 Angola:</span>
+                    <span class="result-time" id="res-angola">15:30</span>
+                </div>
+                <div class="result-line">
+                    <span class="result-country">🇧🇷 Brasil (Brasília):</span>
+                    <span class="result-time" id="res-brasil">11:30</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Atualização dos relógios em tempo real
+        function updateClocks() {
+            const now = new Date();
+
+            // Opções para Angola (UTC+1)
+            const aoTimeStr = now.toLocaleTimeString('pt-BR', { timeZone: 'Africa/Luanda', hour12: false });
+            const aoDateStr = now.toLocaleDateString('pt-BR', { timeZone: 'Africa/Luanda', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            // Opções para Brasil/Brasília (UTC-3)
+            const brTimeStr = now.toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour12: false });
+            const brDateStr = now.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            document.getElementById('ao-clock').textContent = aoTimeStr;
+            document.getElementById('ao-date').textContent = aoDateStr;
+
+            document.getElementById('br-clock').textContent = brTimeStr;
+            document.getElementById('br-date').textContent = brDateStr;
+        }
+
+        // Lógica de Conversão Dinâmica para Reuniões
+        function calculateConversion() {
+            const origin = document.getElementById('origin-country').value;
+            const timeVal = document.getElementById('meeting-time').value;
+
+            if (!timeVal) return;
+
+            const [hoursStr, minutesStr] = timeVal.split(':');
+            let hours = parseInt(hoursStr, 10);
+            let minutes = parseInt(minutesStr, 10);
+
+            let aoHours, brHours;
+
+            if (origin === 'AO') {
+                // Origem é Angola, Brasil está 4 horas atrás
+                aoHours = hours;
+                brHours = (hours - 4 + 24) % 24;
+            } else {
+                // Origem é Brasil, Angola está 4 horas à frente
+                brHours = hours;
+                aoHours = (hours + 4) % 24;
+            }
+
+            const format = (h, m) => String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+
+            document.getElementById('res-angola').textContent = format(aoHours, minutes);
+            document.getElementById('res-brasil').textContent = format(brHours, minutes);
+        }
+
+        // Event listeners para interatividade imediata
+        document.getElementById('origin-country').addEventListener('change', calculateConversion);
+        document.getElementById('meeting-time').addEventListener('input', calculateConversion);
+
+        // Inicializações
+        setInterval(updateClocks, 1000);
+        updateClocks();
+        calculateConversion();
+    </script>
+</body>
+</html>
